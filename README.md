@@ -35,6 +35,12 @@ The following variables can be changed in the header of the screenshot.js:
 - The loading time of the screenshot depends on the number of elements (installed plugins)
 - Since the screenshot is created by reloading the web server on the server side, only the elements that are active when loading are displayed
 
+## Contact
+
+If you have any questions, would like to report problems, or have suggestions for improvement, please feel free to contact me! You can reach me by email at highpoint2000@googlemail.com. I look forward to hearing from you!
+
+<a href="https://www.buymeacoffee.com/Highpoint" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 ## History
 
 ### Version 1.1 (only works from web server version 1.3.5!!!)
