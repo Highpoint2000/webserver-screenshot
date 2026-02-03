@@ -2,9 +2,7 @@
 
 This plugin generates screenshots of the web server.
 
-![image](https://github.com/user-attachments/assets/7fbd8625-c797-4c6b-8533-84a9bf9d11e0)
-
-
+<img width="1390" height="846" alt="image" src="https://github.com/user-attachments/assets/72ac8120-d16d-42f6-b23d-a618d5021ca9" />
 
 ## Version 2.0
 
