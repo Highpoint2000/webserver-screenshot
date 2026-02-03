@@ -20,7 +20,10 @@
     // Update Check Constants
     const plugin_name = "Screenshot";
     const plugin_path = "https://raw.githubusercontent.com/Highpoint2000/webserver-screenshot/";
-    const plugin_JSfile = "main/screenshot.js";
+    
+    // CHANGED: Updated path as requested
+    const plugin_JSfile = "main/Screenshot/screenshot.js";
+    
     const pluginUpdateUrl = plugin_path + plugin_JSfile;
     const pluginHomepageUrl = "https://github.com/Highpoint2000/webserver-screenshot";
 
@@ -59,7 +62,10 @@
 
                     if (!setupOnly || isSetupPath) {
                         const settings = document.getElementById("plugin-settings");
-                        if (settings) settings.innerHTML += `<br><a href="${urlUpdateLink}" target="_blank">[${pluginName}] Update: ${ver} -> ${remoteVer}</a>`;
+                        if (settings) {
+                            // CHANGED: Using a DIV container to force line breaks before and after the message
+                            settings.innerHTML += `<div style="margin-top: 5px;"><a href="${urlUpdateLink}" target="_blank">[${pluginName}] Update: ${ver} -> ${remoteVer}</a></div>`;
+                        }
                         
                         const updateIcon =
                             document.querySelector(".wrapper-outer #navigation .sidenav-content .fa-puzzle-piece") ||
@@ -118,7 +124,6 @@
             scale: 1, 
             width: width,
             height: height,
-            // Filter removed so the button is visible in the screenshot
             cacheBust: true, 
             style: {
                 'font-family': currentFont, 
@@ -135,7 +140,6 @@
             .catch(function (error) {
                 console.error('Error creating screenshot:', error);
                 console.log("Attempting fallback...");
-                // Filter also removed in fallback
                 domtoimage.toPng(node, { quality: 0.9, cacheBust: true })
                     .then(downloadDataUrl)
                     .catch(err => sendToast('error important', 'Screenshot', `Error: ${err.message}`));
@@ -208,7 +212,7 @@
 
     // ───────────────────────────────────────────────────────────────
     // UI Button & CSS Fix
-    // ───────────────────────────────────────────────────────────────
+    // ──────────────────────────────────���────────────────────────────
     function createButton(buttonId) {
       (function waitForFunction() {
         const maxWaitTime = 10000;
