@@ -3,12 +3,14 @@
     ///                                                                  ///
     ///  SCREENSHOT CLIENT SCRIPT FOR FM-DX-WEBSERVER (V2.0)             ///
     ///                                                                  ///
-    ///  by Highpoint                last update: 03.02.26               ///
+    ///  by Highpoint                last update: 04.02.26               ///
     ///                                                                  ///
     ///  https://github.com/Highpoint2000/webserver-screenshot           ///
     ///                                                                  ///
     ////////////////////////////////////////////////////////////////////////
 	
+	///  This plugin works from web server version 1.3.5+
+
     const plugin_version = '2.0';
     const updateInfo = true; // Enable or disable version check
 
@@ -20,10 +22,7 @@
     // Update Check Constants
     const plugin_name = "Screenshot";
     const plugin_path = "https://raw.githubusercontent.com/Highpoint2000/webserver-screenshot/";
-    
-    // CHANGED: Updated path as requested
     const plugin_JSfile = "main/Screenshot/screenshot.js";
-    
     const pluginUpdateUrl = plugin_path + plugin_JSfile;
     const pluginHomepageUrl = "https://github.com/Highpoint2000/webserver-screenshot";
 
@@ -63,7 +62,6 @@
                     if (!setupOnly || isSetupPath) {
                         const settings = document.getElementById("plugin-settings");
                         if (settings) {
-                            // CHANGED: Using a DIV container to force line breaks before and after the message
                             settings.innerHTML += `<div style="margin-top: 5px;"><a href="${urlUpdateLink}" target="_blank">[${pluginName}] Update: ${ver} -> ${remoteVer}</a></div>`;
                         }
                         
@@ -124,7 +122,26 @@
             scale: 1, 
             width: width,
             height: height,
-            cacheBust: true, 
+            cacheBust: true,
+            // Filter: Removes problematic elements (CORS/404) to prevent crashes
+            filter: (node) => {
+                if (node.tagName === 'IMG') {
+                    // 1. Remove broken images (404s)
+                    if (node.complete && node.naturalHeight === 0) {
+                        return false; 
+                    }
+                    
+                    // 2. Remove external images (prevents CORS & Mixed Content errors)
+                    const src = node.src;
+                    if (src && (src.startsWith('http://') || src.startsWith('https://'))) {
+                        // If image URL does not contain our own hostname, it's external -> skip it
+                        if (!src.includes(window.location.hostname)) {
+                            return false; 
+                        }
+                    }
+                }
+                return true; // Keep everything else
+            },
             style: {
                 'font-family': currentFont, 
                 'transform': 'none',
@@ -140,9 +157,21 @@
             .catch(function (error) {
                 console.error('Error creating screenshot:', error);
                 console.log("Attempting fallback...");
-                domtoimage.toPng(node, { quality: 0.9, cacheBust: true })
-                    .then(downloadDataUrl)
-                    .catch(err => sendToast('error important', 'Screenshot', `Error: ${err.message}`));
+                domtoimage.toPng(node, { 
+                    quality: 0.9, 
+                    cacheBust: true,
+                    // Same filter for fallback
+                    filter: (n) => {
+                        if (n.tagName === 'IMG') {
+                            if (n.complete && n.naturalHeight === 0) return false;
+                            const src = n.src;
+                            if (src && (src.startsWith('http://') || src.startsWith('https://')) && !src.includes(window.location.hostname)) return false;
+                        }
+                        return true;
+                    }
+                })
+                .then(downloadDataUrl)
+                .catch(err => sendToast('error important', 'Screenshot', `Error: ${err.message}`));
             });
     }
 
@@ -212,7 +241,7 @@
 
     // ───────────────────────────────────────────────────────────────
     // UI Button & CSS Fix
-    // ──────────────────────────────────���────────────────────────────
+    // ───────────────────────────────────────────────────────────────
     function createButton(buttonId) {
       (function waitForFunction() {
         const maxWaitTime = 10000;
